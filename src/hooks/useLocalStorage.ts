@@ -1,3 +1,5 @@
+import {Task} from "@/pages/tasks";
+
 const useLocalStorage = (key) => {
   const getStorageItem = () => {
     return JSON.parse(localStorage.getItem(key))

@@ -1,5 +1,7 @@
 import React, { ChangeEvent, useRef } from 'react';
 import {useTaskManager} from "@/store/useTaskManager";
+import {useEffect} from "react";
+import {useLocalStorage} from "@/hooks/useLocalStorage";
 
 export interface Task {
   id: number,
@@ -9,7 +11,7 @@ export interface Task {
 
 const TaskManager = () => {
     const createTaskRef = useRef<HTMLInputElement>();
-
+    const { setStorageItem, getStorageItem } = useLocalStorage('tasks')
     const {
      tasks,
     searchTask,
@@ -45,10 +47,10 @@ const TaskManager = () => {
      searchTask(e.target.value);
     };
 
-   // See! I already give you everything!
-   //const filteredTasks = tasks.filter((task) =>
-    // task.title.toLowerCase().includes(searchTask.toLowerCase())
-   //);
+
+    useEffect(() => {
+        setStorageItem(tasks)
+    }, [tasks])
 
   return (
     <div>
