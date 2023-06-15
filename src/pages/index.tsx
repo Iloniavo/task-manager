@@ -2,19 +2,32 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 
 /**
-  Calculates the time difference between the server time and client time.
-  @param {Date} serverTime - The server time.
-  @param {Date} clientTime - The client time.
-  @returns {string} The time difference in the format "{days} days, {hours} hours, {minutes} minutes, {seconds} seconds".
-*/
-const calculateTimeDifference = (server: Date, client: Date) => {};
+ Calculates the time difference between the server time and client time.
+ @returns {string} The time difference in the format "{days} days, {hours} hours, {minutes} minutes, {seconds} seconds".
+ */
+const calculateTimeDifference = (server: Date, client: Date) => {
+  const diff = Math.abs(client.getTime() - server);
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+  return { days, hours, minutes, seconds };
+};
 
 
-export default function Home() {
+export default function Home({serverTime}) {
   const router = useRouter();
   const moveToTaskManager = () => {
     router.push("/tasks");
   }
+
+  const serverTimeToString = new Date(serverTime)
+
+  const {days, hours, minutes, seconds} = calculateTimeDifference(serverTime, new Date())
+  console.log("Server   ", serverTimeToString)
+
   return (
     <>
       <Head>
@@ -29,13 +42,13 @@ export default function Home() {
           {/* Display here the server time (DD-MM-AAAA HH:mm)*/}
           <p>
             Server time:{" "}
-            <span className="serverTime">{/* Replace with the value */}</span>
+            <span className="serverTime">{serverTimeToString.toLocaleTimeString()}</span>
           </p>
 
           {/* Display here the time difference between the server side and the client side */}
           <p>
             Time diff:{" "}
-            <span className="serverTime">{/* Replace with the value */}</span>
+            <span className="serverTime">{`${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`}</span>
           </p>
         </div>
 
@@ -45,4 +58,16 @@ export default function Home() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(){
+  const serverTime = Date.now()
+
+  return {
+    props: {
+        serverTime
+    }
+  }
+
+
 }
